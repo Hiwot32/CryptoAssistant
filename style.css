@@ -1,0 +1,31 @@
+body{
+    background-image: url("https://t4.ftcdn.net/jpg/10/79/48/15/360_F_1079481512_55JskKq62vtnEmU54WFRcEPJa4mPEfON.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    color:white;
+}
+.homePage{
+    margin-top: 280px;
+
+}
+.homePage h1{
+    font-size: 53px;
+}
+.homePage button{
+    background-color:rgb(142, 88, 26);
+}
+.mainContainer{
+    margin:10px;
+    display:flex;
+    gap:12px;
+}
+.left, .right{
+    background-color: #222;
+}
+.priceSummary .row div, .description{
+    background-color: #333;
+}
+.btns button{
+    background-color: #333;
+    color:white;
+}

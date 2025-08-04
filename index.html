@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Assistant</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <script>
+        let homePageOuter=document.createElement('div');
+        homePageOuter.className='homePage text-center';
+        let h1=document.createElement('h1');
+        h1.innerHTML='Your Crypto Assistant';
+        h1.className='mb-4'
+        let p=document.createElement('p');
+        p.innerHTML='Search for a cryptocurrency to get full information';
+        let input=document.createElement('input');
+        input.type='text';
+        input.id='searchIn'
+        input.className='px-3 py-2 w-25 rounded-pill mx-2 border-0'
+        input.placeholder='Type a cryptocurrency name';
+        let buttonInput=document.createElement('button');
+        buttonInput.innerHTML='Search';
+        buttonInput.id='buttonIn'
+        buttonInput.className='rounded-pill px-3 py-2 border-0'
+
+        homePageOuter.appendChild(h1);
+        homePageOuter.appendChild(p);
+        homePageOuter.appendChild(input);
+        homePageOuter.appendChild(buttonInput);
+
+        document.body.appendChild(homePageOuter)
+
+        let mainPageOuter=document.createElement('div');
+        mainPageOuter.style.display='none';
+        mainPageOuter.className='mainPage'
+        let mainContainer=document.createElement('div')
+        mainContainer.className='mainContainer'
+        let left=document.createElement('div');
+        left.className='left w-50 p-3'
+        let header=document.createElement('div');
+        header.className='header';
+        let imgIcon=document.createElement('img');
+        imgIcon.id='cryptoIcon'
+        let cryptoSymbol=document.createElement('h5');
+        cryptoSymbol.id='cryptoSymbol';
+        header.appendChild(imgIcon);
+        header.appendChild(cryptoSymbol);
+        left.appendChild(header);
+        let name=document.createElement('p');
+        name.innerHTML='Digital curruncy name: <span id="cryptoName"></span>';
+        left.appendChild(name)
+        let title=document.createElement('h5');
+        title.innerHTML='Price Summary'
+        left.appendChild(title);
+        let priceSummary=document.createElement('div');
+        priceSummary.className='priceSummary';
+        let row1=document.createElement('div');
+        row1.className='row my-3';
+        let div1=document.createElement('div');
+        div1.className='col-md-4 p-3 mx-2 col-sm-6 rounded-3'
+        div1.innerHTML="Today's Open <span id='open'></span>"
+        let div2=document.createElement('div');
+        div2.className='col-md-4 p-3 mx-2 col-sm-6 rounded-3'
+        div2.innerHTML="Today's Low <span id='low'></span>";
+        row1.appendChild(div1);
+        row1.appendChild(div2);
+        priceSummary.appendChild(row1);
+        let row2=document.createElement('div');
+        row2.className='row my-3'
+        let div3=document.createElement('div');
+        div3.className='col-md-4  col-sm-6 p-3 mx-2 rounded-3'
+        div3.innerHTML="Today's High <span id='high'></span>";
+        let div4=document.createElement('div');
+        div4.className='col-md-4 p-3 mx-2 col-sm-6 rounded-3'
+        div4.innerHTML="Volume Traded <sapn id='volume'></sapn>"
+        row2.appendChild(div3);
+        row2.appendChild(div4);
+        priceSummary.appendChild(row2);
+        left.appendChild(priceSummary);
+        let description=document.createElement('div');
+        description.className='description p-3 rounded-3'
+        let desH1=document.createElement('h5');
+        desH1.innerHTML='Description';
+        let desP=document.createElement('p');
+        desP.id='desP'
+        desP.className='text-truncate'
+        description.appendChild(desH1)
+        description.appendChild(desP)
+        left.appendChild(description);
+        mainContainer.appendChild(left)
+
+
+
+
+        let right=document.createElement('div');
+        right.className='right w-50 p-3';
+        let priceChart=document.createElement('h4');
+        priceChart.innerHTML='Price Chart';
+        priceChart.className='my-2'
+        right.appendChild(priceChart);
+        let chart1=document.createElement('canvas');
+        chart1.id='chart'
+        chart1.className='bg-light w-100'
+        right.appendChild(chart1);
+
+        mainContainer.appendChild(right)
+
+        mainPageOuter.appendChild(mainContainer)
+
+        document.body.appendChild(mainPageOuter)
+
+
+        let searchInput=document.getElementById('searchIn');
+        let searchBtn=document.getElementById('buttonIn');
+        let coinList=[];
+        let currentCoinId;
+        
+       
+
+        searchBtn.addEventListener('click', ()=>{
+            fetch("https://api.coingecko.com/api/v3/coins/list")
+            .then(res=>res.json())
+            .then(res=>{
+                coinList=res;
+
+            let query=searchInput.value.toLowerCase();
+            if(!query){
+                alert("Enter Currency Name!");
+                return;
+            }
+
+            const coin=coinList.find(c=>
+                c.id==query || c.name.toLowerCase()==query || c.symbol.toLowerCase()==query
+            )
+
+            currentCoinId=coin.id;
+
+            
+            
+
+            fetch(`https://api.coingecko.com/api/v3/coins/${currentCoinId}`)
+            .then(data=>data.json())
+            .then(data=>{
+
+                document.getElementById('cryptoIcon').src=data.image.thumb;
+                document.getElementById('cryptoSymbol').innerHTML=data.symbol;
+                document.getElementById('cryptoName').innerHTML=data.name;
+
+                document.getElementById('open').innerHTML="$"+ data.market_data.current_price.usd.toFixed(2);
+                document.getElementById('low').innerHTML="$"+data.market_data.low_24h.usd.toFixed(2);
+                document.getElementById('high').innerHTML="$"+data.market_data.high_24h.usd.toFixed(2);
+                document.getElementById('volume').innerHTML="$"+data.market_data.total_volume.usd.toLocaleString();
+
+                document.getElementById('desP').innerHTML=data.description.en;
+
+                function loadChart(days){
+
+                fetch(`https://api.coingecko.com/api/v3/coins/${currentCoinId}/market_chart?vs_currency=usd&days=${days}`)
+                .then(response=>response.json())
+                .then(response=>{
+
+                    
+                    const labels = response.prices.map((p) =>
+                        new Date(p[0]).toLocaleDateString(undefined, {
+                          month: "short",
+                          day: "numeric",
+                        })
+                    )
+                    const priceData=response.prices.map((p)=>p[1])
+
+                    const ctx =document.getElementById('chart').getContext("2d");
+                    chart=new Chart(ctx, {
+                        type:'line',
+                        data:{
+                            labels,
+                            datasets:[
+                                {
+                                label:'Weekly Price Chart In USD',
+                                data:priceData,
+                                tension:0.3,
+                                fill:true
+                            }
+                        ],
+                        options:{
+                            responsive:true,
+                            scales:{
+                                x: {
+                                    ticks:{color:"#322"}
+                                },
+                                y:{
+                                    ticks:{color:"#322"}
+                                }
+                            }
+                        }
+                        }
+                    
+                    })
+                })
+                }
+loadChart(7)
+            })
+
+
+  document.querySelector('.homePage').style.display='none';
+            document.querySelector('.mainPage').style.display='block'
+            })
+          
+        })
+
+
+
+    </script>
+    
+</body>
+</html>
